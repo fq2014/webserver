@@ -1,55 +1,33 @@
-#import socket module
 from socket import *
-import sys # In order to terminate the program
-
-#serverPort = 13331
+import sys
 def webServer(port=13331):
-   serverSocket = socket(AF_INET, SOCK_STREAM)
-   serverSocket.bind(('',port))
-   serverSocket.listen(1)
-   #print ('The server is ready to receive')# comment all print statements before submission
-
-   #Fill in end
-
+   serverSocket = socket(AF_INET, SOCK_STREAM) # open a socket
+   serverSocket.bind(('', port)) #bind ip and port to the socket
+   serverSocket.listen(1) #listen on the socket 
    while True:
-       #Establish the connection
+	  
        #print('Ready to serve...')
-       connectionSocket, addr = serverSocket.accept() #Fill in start      #Fill in end
+       connectionSocket, addr = serverSocket.accept() 
        try:
-           message = connectionSocket.recv(1024).decode() #Fill in start    #Fill in end
+           message = connectionSocket.recv(1024).decode()
            filename = message.split()[1]
            f = open(filename[1:])
-           outputdata = f.read() #Fill in start     #Fill in end
+           outputdata = f.read()
            f.close()
-           #Send one HTTP header line into socket
-           connectionSocket.send('HTTP/1.1 200 OK\r\n\r\n'.encode())  # http OK message
-
-
-
-           #Fill in end
-
-           #Send the content of the requested file to the client
+		  
+           connectionSocket.send("HTTP/1.1 200 OK\r\n\r\n".encode())
            for i in range(0, len(outputdata)):
-               connectionSocket.send(outputdata[i].encode())
+               connectionSocket.sendall(outputdata[i].encode())
            connectionSocket.send("\r\n".encode())
            connectionSocket.close()
-
        except IOError:
-           #Send response message for file not found (404)
-           #Fill in start
-           connectionSocket.send('HTTP/1.1 404 not found \r\n\r\n'.encode())
+           connectionSocket.send("HTTP/1.1 404 Not Found\r\n\r\n".encode())
            connectionSocket.close()
-           #Fill in end
+		  
        except BrokenPipeError:
            break
-           #Close client socket
-           #Fill in start
-
-           #Fill in end
-
+		  
    serverSocket.close()
-   sys.exit()  # Terminate the program after sending the corresponding data
-
+   sys.exit()
 if __name__ == "__main__":
-   webServer(13331)
-
+    webServer(port=13331)
